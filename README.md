@@ -429,7 +429,7 @@ MergeSort/Select's recursion depth at that scale.
 ```
 assignment1-divide-and-conquer/
 ├── src/
-│   └── main/java/daa/
+│   └── daa/
 │       ├── Point.java
 │       ├── Metrics.java
 │       ├── InputGenerator.java
