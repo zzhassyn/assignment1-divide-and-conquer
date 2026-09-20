@@ -128,6 +128,13 @@ public class CorrectnessTests {
             }
         }
         check("DeterministicSelect[" + trials + " random trials]", allOk);
+
+        int[] equal = new int[1_000];
+        Arrays.fill(equal, 7);
+        Metrics equalMetrics = new Metrics();
+        int selected = new DeterministicSelector(equalMetrics).select(equal, equal.length / 2);
+        check("DeterministicSelect[all equal, linear work]",
+                selected == 7 && equalMetrics.comparisons < 100_000);
     }
 
     // ---------------------------------------------------------------- ClosestPair

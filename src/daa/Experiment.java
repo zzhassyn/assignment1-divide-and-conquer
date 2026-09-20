@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Experiment {
 
@@ -130,7 +131,7 @@ public class Experiment {
         try (PrintWriter pw = new PrintWriter(Files.newBufferedWriter(p))) {
             pw.println("algorithm,input_type,n,time_ms,max_depth,comparisons,swaps,shifts");
             for (Row r : rows) {
-                pw.printf("%s,%s,%d,%.4f,%d,%d,%d,%d%n",
+                pw.printf(Locale.US, "%s,%s,%d,%.4f,%d,%d,%d,%d%n",
                         r.algorithm, r.inputType, r.n, r.timeMs, r.maxDepth, r.comparisons, r.swaps, r.shifts);
             }
         }

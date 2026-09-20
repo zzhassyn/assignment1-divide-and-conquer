@@ -8,7 +8,8 @@ package daa;
  * - Elements are split into groups of 5.
  * - The median of each group is found (with insertion sort on the tiny group),
  * and the median of those medians is used as a guaranteed "good" pivot.
- * - In-place Lomuto-style partitioning around that pivot.
+ * - In-place three-way partitioning around that pivot, so equal values are
+ *   removed from consideration in one pass.
  * - The algorithm recurses ONLY into the partition that must contain the
  * k-th element (never both sides), which is what keeps it linear.
  *
@@ -46,14 +47,14 @@ public class DeterministicSelector {
                     return a[lo];
 
                 int pivotIndex = medianOfMedians(a, lo, hi);
-                pivotIndex = partition(a, lo, hi, pivotIndex);
+                int[] equalRange = partition(a, lo, hi, a[pivotIndex]);
 
-                if (k == pivotIndex) {
-                    return a[k];
-                } else if (k < pivotIndex) {
-                    hi = pivotIndex - 1;
+                if (k < equalRange[0]) {
+                    hi = equalRange[0] - 1;
+                } else if (k > equalRange[1]) {
+                    lo = equalRange[1] + 1;
                 } else {
-                    lo = pivotIndex + 1;
+                    return a[k];
                 }
             }
         } finally {
@@ -82,19 +83,22 @@ public class DeterministicSelector {
         return medianOfMediansRank;
     }
 
-    private int partition(int[] a, int lo, int hi, int pivotIndex) {
-        int pivotValue = a[pivotIndex];
-        swap(a, pivotIndex, hi);
-        int store = lo;
-        for (int i = lo; i < hi; i++) {
+    private int[] partition(int[] a, int lo, int hi, int pivotValue) {
+        int less = lo, i = lo, greater = hi;
+        while (i <= greater) {
             metrics.comparisons++;
             if (a[i] < pivotValue) {
-                swap(a, i, store);
-                store++;
+                swap(a, less++, i++);
+            } else {
+                metrics.comparisons++;
+                if (a[i] > pivotValue) {
+                    swap(a, i, greater--);
+                } else {
+                    i++;
+                }
             }
         }
-        swap(a, store, hi);
-        return store;
+        return new int[] { less, greater };
     }
 
     private void insertionSort(int[] a, int lo, int hi) {
